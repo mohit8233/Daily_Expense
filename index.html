@@ -137,6 +137,7 @@ li{
 
   <input type="text" id="desc" placeholder="Expense Name">
   <input type="number" id="amount" placeholder="Amount">
+  <input type="date" id="date">
   <button onclick="addExpense()">Add Expense</button>
 
   <ul id="list"></ul>
@@ -161,11 +162,12 @@ function render(){
 
     let li = document.createElement("li");
     li.innerHTML = `
-      ${item.desc} - ₹${item.amount}
-      <button class="delete-btn" onclick="deleteExpense(${index})">
-  ✕
-</button>
-    `;
+  ${item.desc} - ₹${item.amount} <br>
+  <small>${item.date}</small>
+  <button class="delete-btn" onclick="deleteExpense(${index})">
+    ✕
+  </button>
+`;
     list.appendChild(li);
   });
 
@@ -176,19 +178,22 @@ function render(){
 function addExpense(){
   let desc = document.getElementById("desc").value;
   let amount = document.getElementById("amount").value;
+  let date = document.getElementById("date").value;
 
-  if(desc === "" || amount === ""){
+  if(desc === "" || amount === "" || date === ""){
     alert("Fill all fields");
     return;
   }
 
   expenses.push({
     desc: desc,
-    amount: Number(amount)
+    amount: Number(amount),
+    date: date
   });
 
   document.getElementById("desc").value="";
   document.getElementById("amount").value="";
+  document.getElementById("date").value="";
 
   render();
 }
