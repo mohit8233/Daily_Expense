@@ -81,11 +81,12 @@ ul{
 
 li{
   background:#f2f2f2;
-  padding:8px;
-  margin:5px 0;
+  padding:10px;
+  margin:6px 0;
   border-radius:8px;
   display:flex;
   justify-content:space-between;
+  align-items:center;
   animation:slide 0.3s ease;
 }
 
@@ -94,14 +95,16 @@ li{
   to{opacity:1; transform:translateX(0);}
 }
 
-.delete{
-  background:red;
-  color:#fff;
-  border:none;
-  padding:3px 6px;
-  border-radius:5px;
-  cursor:pointer;
+.left{
+  display:flex;
+  flex-direction:column;
 }
+
+.date{
+  font-size:12px;
+  color:gray;
+}
+
 .delete-btn{
   width:28px;
   height:28px;
@@ -115,13 +118,6 @@ li{
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:0.3s;
-}
-
-.delete-btn:hover{
-  background:#ff1e00;
-  transform:rotate(90deg) scale(1.1);
-  box-shadow:0 5px 15px rgba(0,0,0,0.3);
 }
 </style>
 </head>
@@ -137,7 +133,6 @@ li{
 
   <input type="text" id="desc" placeholder="Expense Name">
   <input type="number" id="amount" placeholder="Amount">
-  <input type="date" id="date">
   <button onclick="addExpense()">Add Expense</button>
 
   <ul id="list"></ul>
@@ -145,9 +140,11 @@ li{
 
 <script>
 
+// 👉 Monthly Storage Key
 const now = new Date();
 const storageKey = "expenses_" + now.getMonth() + "_" + now.getFullYear();
 
+// 👉 Load data
 let expenses = JSON.parse(localStorage.getItem(storageKey)) || [];
 
 const list = document.getElementById("list");
@@ -161,13 +158,19 @@ function render(){
     total += Number(item.amount);
 
     let li = document.createElement("li");
+
     li.innerHTML = `
-  ${item.desc} - ₹${item.amount} <br>
-  <small>${item.date}</small>
-  <button class="delete-btn" onclick="deleteExpense(${index})">
-    ✕
-  </button>
-`;
+      <div class="left">
+        <strong>${item.desc}</strong>
+        <span class="date">📅 ${item.date}</span>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span>₹${item.amount}</span>
+        <button class="delete-btn" onclick="deleteExpense(${index})">✕</button>
+      </div>
+    `;
+
     list.appendChild(li);
   });
 
@@ -178,22 +181,27 @@ function render(){
 function addExpense(){
   let desc = document.getElementById("desc").value;
   let amount = document.getElementById("amount").value;
-  let date = document.getElementById("date").value;
 
-  if(desc === "" || amount === "" || date === ""){
+  if(desc === "" || amount === ""){
     alert("Fill all fields");
     return;
   }
 
+  // 👉 Auto Date (DD/MM/YYYY)
+  const today = new Date();
+  const formattedDate =
+    String(today.getDate()).padStart(2, '0') + "/" +
+    String(today.getMonth()+1).padStart(2, '0') + "/" +
+    today.getFullYear();
+
   expenses.push({
     desc: desc,
     amount: Number(amount),
-    date: date
+    date: formattedDate
   });
 
   document.getElementById("desc").value="";
   document.getElementById("amount").value="";
-  document.getElementById("date").value="";
 
   render();
 }
